@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Oportunidades Laborales PUCP - Acceso Unificado</title>
+    <style>
+        /* =========================================
+           VARIABLES DE IDENTIDAD PUCP
+        ========================================= */
+        :root {
+            --pucp-blue: #0A1C40;
+            --pucp-purple: #8142FF;
+            --pucp-purple-hover: #6A359C;
+            --pucp-red: #D32F2F;
+            --warning-orange: #E65100;
+            --bg-gray: #F8F9FA;
+            --border-light: #E0E0E0;
+            --text-dark: #202124;
+            --text-gray: #5F6368;
+        }
+
+        /* =========================================
+           FILTROS GLOBALES DE ACCESIBILIDAD (DALTONISMO)
+        ========================================= */
+        /* Rojo-Verde (Protanopia/Deuteranopia): Aumenta contraste y rota matices para separar rojos de verdes */
+        html.theme-rv { filter: contrast(1.1) saturate(1.5) hue-rotate(-25deg); }
+        /* Azul-Amarillo (Tritanopia): Invierte y resalta el eje de colores conflictivos */
+        html.theme-aa { filter: contrast(1.1) saturate(1.5) hue-rotate(180deg); }
+        /* Visión Monocromática (Acromatopsia): Escala de grises de alto contraste */
+        html.theme-completo { filter: grayscale(100%) contrast(1.2); }
+
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-gray); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
+
+        /* HEADER INSTITUCIONAL */
+        .login-header { background-color: var(--pucp-blue); padding: 15px 40px; display: flex; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); z-index: 20; position: relative;}
+        .login-header img { height: 45px; margin-right: 15px; filter: brightness(0) invert(1); }
+        .login-header h1 { color: white; font-size: 1.2rem; font-weight: 400; margin: 0; border-left: 1px solid rgba(255,255,255,0.3); padding-left: 15px; }
+
+        /* MENÚ DE ACCESIBILIDAD */
+        .accessibility-menu { position: relative; cursor: pointer; display: flex; align-items: center; margin-left: auto; }
+        .acc-icon { background-color: rgba(255,255,255,0.1); width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; transition: background 0.3s; color: white;}
+        .acc-icon:hover { background-color: rgba(255,255,255,0.3); }
+        .acc-dropdown { top: 45px; right: 0; min-width: 240px; z-index: 2000; }
+        .acc-dropdown a.active { font-weight: bold; color: var(--pucp-purple); background-color: var(--bg-gray); }
+        .acc-dropdown a.active::before { content: "✔ "; margin-right: 5px; }
+
+        /* CONTENEDOR LOGIN CON IMAGEN DE FONDO */
+        .main-container { 
+            flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; position: relative;
+            background-image: url('https://i.ibb.co/0ypyWXCN/1-plan-director-1920x1080-1.jpg');
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+        }
+        .main-container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(10, 28, 64, 0.45); }
+
+        .login-card { 
+            background: white; border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.35); width: 100%; max-width: 450px; padding: 40px; box-sizing: border-box; position: relative; z-index: 10;
+        }
+
+        .login-card h2 { color: var(--pucp-blue); text-align: center; margin-top: 0; margin-bottom: 5px; font-size: 1.4rem; line-height: 1.2;}
+        .login-card p.subtitle { text-align: center; color: var(--text-gray); margin-bottom: 30px; font-size: 0.95rem; }
+        .info-banner { background-color: #F3EAFB; border-left: 4px solid var(--pucp-purple); padding: 15px; border-radius: 4px; margin-bottom: 25px; }
+        .info-banner h4 { margin: 0 0 5px 0; color: var(--pucp-purple); font-size: 0.95rem; }
+        .info-banner p { margin: 0; font-size: 0.85rem; color: var(--text-dark); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; font-weight: 600; color: var(--pucp-blue); }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #CCCCCC; border-radius: 6px; box-sizing: border-box; font-size: 1rem; transition: all 0.3s; }
+        .form-group input:focus { outline: none; border-color: var(--pucp-purple); box-shadow: 0 0 0 3px rgba(106, 53, 156, 0.1); }
+        
+        .form-group input.error-border { border-color: var(--pucp-red); background-color: #FFFAFA; }
+        .form-group input.warning-border { border-color: var(--warning-orange); background-color: #FFF8E1; }
+        .form-group input:disabled { background-color: #F0F0F0; border-color: #E0E0E0; color: #999; cursor: not-allowed; }
+        
+        .error-message { display: none; color: var(--pucp-red); font-size: 0.85rem; margin-top: 8px; font-weight: 500; line-height: 1.4; padding: 10px; border-radius: 4px; background-color: #FFFAFA; border-left: 3px solid var(--pucp-red); }
+        .warning-message { color: var(--warning-orange); background-color: #FFF8E1; border-left-color: var(--warning-orange); }
+        
+        button.btn-primary { width: 100%; background-color: var(--pucp-purple-hover); color: white; border: none; padding: 14px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background-color 0.3s; margin-top: 10px; }
+        button.btn-primary:hover:not(:disabled) { background-color: var(--pucp-blue); }
+        button.btn-primary:disabled { background-color: #BDBDBD; cursor: not-allowed; color: #FFFFFF; }
+        
+        button.btn-secondary { width: 100%; background-color: transparent; color: var(--text-gray); border: 1px solid var(--border-light); padding: 14px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.3s; margin-top: 10px; }
+        button.btn-secondary:hover { background-color: var(--bg-gray); color: var(--pucp-red); border-color: var(--pucp-red); }
+        
+        .forgot-link { display: block; text-align: center; margin-top: 20px; color: var(--pucp-purple-hover); text-decoration: none; font-size: 0.9rem; font-weight: 600;}
+        .tutorial-link { display: block; text-align: center; margin-top: 12px; color: var(--text-gray); text-decoration: none; font-size: 0.85rem; font-weight: 500; transition: color 0.3s; }
+        .tutorial-link:hover { color: var(--pucp-blue); text-decoration: underline; }
+
+        /* MODALES GLOBALES */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 3000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-box { background-color: white; padding: 40px; border-radius: 12px; width: 90%; max-width: 450px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: slideUp 0.4s ease-out; position: relative;}
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-box h3 { color: var(--pucp-blue); margin-top: 0; font-size: 1.4rem; }
+        .modal-box p { color: var(--text-gray); font-size: 0.95rem; line-height: 1.5; margin-bottom: 25px; text-align: left;}
+        .modal-icon { font-size: 3.5rem; margin-bottom: 15px; }
+        .modal-actions { display: flex; gap: 15px; }
+
+        /* MINI-TUTORIAL */
+        .tutorial-box { padding-bottom: 30px; }
+        .slide { display: none; animation: fadeIn 0.4s; min-height: 180px; }
+        .slide.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .slide h3 { font-size: 1.2rem; margin-bottom: 10px; }
+        .slide p { text-align: center; }
+        .tutorial-controls { display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 10px; border-top: 1px solid var(--border-light); padding-top: 25px;}
+        .dots { display: flex; gap: 8px; }
+        .dot { width: 10px; height: 10px; background-color: var(--border-light); border-radius: 50%; transition: background-color 0.3s; }
+        .dot.active { background-color: var(--pucp-purple); }
+        .tutorial-btns { display: flex; gap: 10px; width: 100%; justify-content: space-between; }
+        .tutorial-btns button { margin-top: 0; padding: 12px; }
+        .close-cross { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-gray); font-weight: bold;}
+        .close-cross:hover { color: var(--pucp-red); }
+
+        /* DASHBOARD HEADER */
+        #dashboard-view { display: none; width: 100%; }
+        .dash-nav { background-color: var(--pucp-blue); height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; }
+        .dash-nav-logo { display: flex; align-items: center; color: white; font-size: 1.2rem; }
+        .dash-nav-logo img { height: 40px; margin-right: 15px; filter: brightness(0) invert(1); }
+        .dash-nav-right { display: flex; align-items: center; gap: 25px; margin-left: auto; }
+        .notification-icon { position: relative; color: white; font-size: 1.5rem; cursor: pointer; }
+        .notification-dot { position: absolute; top: -2px; right: -2px; background-color: var(--pucp-purple); width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--pucp-blue); }
+        .user-profile-menu { position: relative; cursor: pointer; display: flex; align-items: center; background-color: rgba(255,255,255,0.1); padding: 5px 10px 5px 5px; border-radius: 30px; transition: background 0.3s; }
+        .avatar-circle { background-color: var(--pucp-purple); width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; margin-right: 8px; }
+        .arrow-down { color: white; font-size: 0.8rem; }
+        .dropdown-content { display: none; position: absolute; top: 50px; right: 0; background-color: white; min-width: 180px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; z-index: 1000; }
+        .dropdown-content.show { display: block; }
+        .dropdown-content a { color: var(--text-dark); padding: 12px 16px; text-decoration: none; display: flex; align-items: center; font-size: 0.9rem; border-bottom: 1px solid var(--border-light); }
+
+        /* DASHBOARD CONTENT */
+        .dash-content { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .welcome-section h2 { margin: 0 0 5px 0; color: var(--pucp-blue); font-size: 2rem; }
+        .quick-services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 40px; }
+        .service-card { background: white; border: 1px solid var(--border-light); border-radius: 6px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s; cursor: pointer; }
+        .service-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.08); border-color: var(--pucp-purple); }
+        .service-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; font-size: 1.2rem; }
+        .service-card h4 { margin: 0 0 8px 0; color: var(--pucp-blue); font-size: 1rem; }
+        .service-card p { margin: 0; color: var(--text-gray); font-size: 0.8rem; line-height: 1.4; }
+        .ic-1, .ic-2 { background: #F0EDF6; color: var(--pucp-blue); }
+        .ic-3 { background: #F0EDF6; color: var(--pucp-purple-hover); }
+        .ic-4, .ic-5 { background: #E6F4EA; color: #137333; }
+
+        /* FILTROS */
+        .filters-section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 30px; display: flex; gap: 15px; flex-wrap: wrap; }
+        .filter-group { flex: 1; min-width: 200px; }
+        .filter-group label { display: block; font-size: 0.8rem; font-weight: bold; color: var(--text-gray); margin-bottom: 5px; text-transform: uppercase; }
+        .filter-group select { width: 100%; padding: 10px; border: 1px solid var(--border-light); border-radius: 6px; font-size: 0.95rem; color: var(--text-dark); outline: none; }
+        optgroup { font-weight: bold; color: var(--pucp-blue); }
+
+        /* TARJETAS DE EMPLEO CON ACCIONES */
+        .jobs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .job-card { background: white; padding: 25px 25px 15px 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-top: 4px solid var(--pucp-blue); display: flex; flex-direction: column; justify-content: space-between; }
+        .job-card h3 { margin: 0 0 8px 0; color: var(--pucp-blue); font-size: 1.15rem; display: flex; align-items: center; gap: 8px; line-height: 1.3;}
+        .company-name { font-weight: 600; color: var(--text-dark); margin-bottom: 15px; font-size: 0.95rem; }
+        .job-tags { margin-bottom: 15px; }
+        .job-tag { display: inline-block; background: #E8F0FE; color: #1A73E8; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; margin-right: 5px; margin-bottom: 5px; }
+        .tag-sector { background: #FCE8E6; color: #D93025; }
+        .tag-modality { background: #FEF7E0; color: #B06000; }
+        .job-details { margin-top: auto; border-top: 1px solid var(--border-light); padding-top: 15px; margin-bottom: 15px;}
+        .detail-item { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-gray); }
+        .detail-item strong { color: var(--text-dark); width: 80px; }
+        
+        .card-actions { border-top: 1px solid var(--border-light); padding-top: 12px; display: flex; gap: 15px; }
+        .action-btn { background: none; border: none; font-size: 1.3rem; color: #9AA0A6; cursor: pointer; transition: color 0.2s, transform 0.1s; padding: 0; display: flex; align-items: center;}
+        .action-btn:hover { transform: scale(1.1); }
+        .action-btn.star:hover, .action-btn.star.active { color: #FABB05; }
+        .action-btn.dislike { font-size: 1.2rem; font-weight: bold; }
+        .action-btn.dislike:hover, .action-btn.dislike.active { color: #EA4335; }
+        .apply-date { margin-left: auto; font-size: 0.8rem; color: #B06000; display: flex; align-items: center; font-weight: 600;}
+
+        /* PAGINACIÓN */
+        .pagination-container { display: flex; justify-content: center; align-items: center; margin-top: 40px; gap: 10px; }
+        .page-btn { background: white; border: 1px solid var(--border-light); padding: 8px 14px; border-radius: 4px; color: var(--text-dark); font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .page-btn:hover:not(:disabled) { border-color: var(--pucp-purple); color: var(--pucp-purple); }
+        .page-btn.active { background-color: var(--pucp-blue); color: white; border-color: var(--pucp-blue); }
+        .page-btn:disabled { color: #CCC; cursor: not-allowed; }
+        .no-results { grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-gray); font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+    <div id="login-view" style="display: flex; flex-direction: column; width: 100%; min-height: 100vh;">
+        <header class="login-header">
+            <img src="https://i.ibb.co/7dk3RCVw/logo-pucp2.png" alt="Logo PUCP">
+            <h1>Oficina de Empleabilidad</h1>
+            
+            <div class="accessibility-menu" id="accLoginBtn">
+                <div class="acc-icon" title="Opciones de Accesibilidad">👁️</div>
+                <div class="dropdown-content acc-dropdown" id="accLoginDropdown">
+                    <a href="#" data-theme="normal" class="active">Visión Normal</a>
+                    <a href="#" data-theme="theme-rv">Daltonismo (Rojo-Verde)</a>
+                    <a href="#" data-theme="theme-aa">Daltonismo (Azul-Amarillo)</a>
+                    <a href="#" data-theme="theme-completo">Visión Monocromática</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-container">
+            <div class="login-card">
+                <h2>Sistema de Oportunidades Laborales PUCP - Alumnos y Egresados</h2>
+                <p class="subtitle">Accede a oportunidades profesionales</p>
+                <div class="info-banner">
+                    <h4>¡Nuevo Acceso Unificado!</h4>
+                    <p>Ahora ingresas directamente con tu misma contraseña del <b>Campus Virtual</b>. Sin registros previos.</p>
+                </div>
+                <form id="loginForm">
+                    <div class="form-group"><label for="codigo">Código PUCP</label><input type="text" id="codigo" placeholder="Ej: 20210777" required autocomplete="off"></div>
+                    <div class="form-group">
+                        <label for="password">Contraseña de Campus Virtual</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                        <div class="error-message" id="errorMsg"></div>
+                    </div>
+                    <button type="submit" id="btnSubmit" class="btn-primary">Iniciar Sesión</button>
+                    
+                    <a href="https://agora.pucp.edu.pe/tutorial/campusvirtual/respuesta.php?id=7" target="_blank" class="forgot-link">¿Olvidaste tu contraseña del Campus Virtual?</a>
+                    <a href="#" id="btnOpenTutorial" class="tutorial-link">💡 ¿Cómo funciona el nuevo acceso? Descúbrelo aquí</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="tutorialModal" class="modal-overlay">
+        <div class="modal-box tutorial-box">
+            <button id="btnCloseTutorial" class="close-cross" title="Cerrar">✕</button>
+            
+            <div class="slide active" id="slide0">
+                <div class="modal-icon">🔗</div>
+                <h3>1. Una Sola Identidad</h3>
+                <p>Despídete de la "fatiga de contraseñas". Ahora la Bolsa de Trabajo utiliza la misma llave que tu Campus Virtual e Intranet.</p>
+            </div>
+            <div class="slide" id="slide1">
+                <div class="modal-icon">⚡</div>
+                <h3>2. Tu Perfil Automático</h3>
+                <p>Al ingresar, el sistema detecta instantáneamente tu ciclo y carrera para recomendarte vacantes precisas sin llenar formularios eternos.</p>
+            </div>
+            <div class="slide" id="slide2">
+                <div class="modal-icon">🛡️</div>
+                <h3>3. Seguridad Institucional</h3>
+                <p>Al centralizar el acceso, tus datos están doblemente protegidos por la infraestructura oficial de tecnologías de la PUCP.</p>
+            </div>
+
+            <div class="tutorial-controls">
+                <div class="dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <div class="tutorial-btns">
+                    <button id="btnPrevSlide" class="btn-secondary" style="display:none; width: 48%;">Atrás</button>
+                    <button id="btnNextSlide" class="btn-primary" style="width: 100%;">Siguiente Paso</button>
+                    <button id="btnFinishTutorial" class="btn-primary" style="display:none; width: 48%;">¡Entendido!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="consentModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-icon">🔐</div>
+            <h3>Uso de Datos Institucionales</h3>
+            <p>Para brindarte una experiencia personalizada y evitar que llenes formularios extensos, la Bolsa de Trabajo PUCP solicita tu autorización para sincronizar y utilizar tus datos académicos básicos (Nombres, Carrera y Ciclo) provenientes del Campus Virtual.</p>
+            <div class="modal-actions">
+                <button id="btnRejectConsent" class="btn-secondary">No, regresar</button>
+                <button id="btnAcceptConsent" class="btn-primary">Sí, autorizo</button>
+            </div>
+        </div>
+    </div>
+    <div id="welcomeModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-icon">🎉</div>
+            <h3>¡Unificación Exitosa!</h3>
+            <p>Hemos vinculado tu cuenta de Campus Virtual correctamente. A partir de hoy, esta será tu única forma de ingreso al portal laboral. Ya no tendrás que preocuparte por recordar contraseñas extra.</p>
+            <button id="btnContinueDashboard" class="btn-primary">Continuar a mi perfil</button>
+        </div>
+    </div>
+
+    <div id="dashboard-view">
+        <nav class="dash-nav">
+            <div class="dash-nav-logo"><img src="https://i.ibb.co/7dk3RCVw/logo-pucp2.png" alt="Logo PUCP"><span>Empleabilidad</span></div>
+            
+            <div class="dash-nav-right">
+                <div class="accessibility-menu" id="accDashBtn">
+                    <div class="acc-icon" title="Opciones de Accesibilidad">👁️</div>
+                    <div class="dropdown-content acc-dropdown" id="accDashDropdown">
+                        <a href="#" data-theme="normal" class="active">Visión Normal</a>
+                        <a href="#" data-theme="theme-rv">Daltonismo (Rojo-Verde)</a>
+                        <a href="#" data-theme="theme-aa">Daltonismo (Azul-Amarillo)</a>
+                        <a href="#" data-theme="theme-completo">Visión Monocromática</a>
+                    </div>
+                </div>
+
+                <div class="notification-icon">🔔<div class="notification-dot"></div></div>
+                <div class="user-profile-menu" id="profileBtn">
+                    <div class="avatar-circle">👤</div><div class="arrow-down">▼</div>
+                    <div class="dropdown-content" id="profileDropdown">
+                        <a href="#">⚙️ Mi Cuenta</a>
+                        <a href="#" id="btnLogout">🚪 Cerrar Sesión</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="dash-content">
+            <div class="welcome-section">
+                <h2>¡Hola, Juana! 👋</h2>
+                <p style="color: var(--text-gray); margin-bottom: 25px;">Impulsa tu carrera con nuestras herramientas integradas.</p>
+                <div class="quick-services-grid">
+                    <div class="service-card"><div class="service-icon ic-1">🤝</div><h4>Mentoring</h4><p>Recibe asesoramiento del mundo real y conexiones.</p></div>
+                    <div class="service-card"><div class="service-icon ic-2">👥</div><h4>Simulador de entrevistas</h4><p>Espacio práctico de ensayo previo.</p></div>
+                    <div class="service-card"><div class="service-icon ic-3">📑</div><h4>Generador de CV</h4><p>Crea tu resumen profesional velozmente.</p></div>
+                    <div class="service-card"><div class="service-icon ic-4">👤</div><h4>Perfil público</h4><p>Exhibe tus logros académicos.</p></div>
+                    <div class="service-card"><div class="service-icon ic-5">📄</div><h4>Agregar currículum</h4><p>Carga tu CV para comenzar la búsqueda.</p></div>
+                </div>
+            </div>
+
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label>Sector</label>
+                    <select id="filterSector">
+                        <option value="todos">Todos los sectores</option>
+                        <option value="gestion">Gestión / Administración</option>
+                        <option value="tecnologia">Tecnología / Software</option>
+                        <option value="consumo">Consumo Masivo</option>
+                        <option value="retail">Retail / Comercio</option>
+                        <option value="publico">Sector Público</option>
+                        <option value="deportivo">Deportivo / Entretenimiento</option>
+                        <option value="banca">Banca y Finanzas</option>
+                        <option value="legal">Legal / Derecho</option>
+                        <option value="ong">ONG / Social</option>
+                        <option value="salud">Salud / Clínico</option>
+                        <option value="logistica">Logística / Operaciones</option>
+                        <option value="educacion">Educación / Docencia</option>
+                        <option value="comunicaciones">Comunicaciones / Mkt</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Modalidad</label>
+                    <select id="filterModality">
+                        <option value="todos">Todas las modalidades</option>
+                        <option value="presencial">Presencial</option>
+                        <option value="hibrido">Híbrido</option>
+                        <option value="virtual">Virtual / Remoto</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Ubicación</label>
+                    <select id="filterLocation">
+                        <option value="todos">Todas las ubicaciones</option>
+                        <optgroup label="Lima y Callao (Distritos)">
+                            <option value="lima">📍 Todo Lima y Callao</option>
+                            <option value="lima-sanisidro">San Isidro</option>
+                            <option value="lima-miraflores">Miraflores</option>
+                            <option value="lima-pueblolibre">Pueblo Libre</option>
+                            <option value="lima-jesusmaria">Jesús María</option>
+                            <option value="lima-surco">Surco</option>
+                            <option value="lima-sanmiguel">San Miguel</option>
+                            <option value="lima-lince">Lince</option>
+                            <option value="lima-ate">Ate</option>
+                            <option value="lima-callao">Callao</option>
+                        </optgroup>
+                        <optgroup label="Provincias">
+                            <option value="arequipa">Arequipa</option>
+                            <option value="piura">Piura</option>
+                            <option value="cusco">Cusco</option>
+                            <option value="ancash">Áncash</option>
+                            <option value="trujillo">La Libertad (Trujillo)</option>
+                            <option value="lambayeque">Lambayeque (Chiclayo)</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+
+            <div class="jobs-grid" id="jobsContainer"></div>
+            <div class="pagination-container" id="paginationContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // BASE DE DATOS SIMULADA (54 OFERTAS)
+        // ==========================================
+        const jobsData = [
+            { title: "📊 Analista Comercial y de Gestión", company: "Alicorp S.A.A.", tags: ["Tiempo Completo", "Consumo Masivo", "Híbrido"], sector: "consumo", modality: "hibrido", locationValue: "lima-callao", locationText: "Callao", salary: "S/ 3,000", limitDate: "Jul 15" },
+            { title: "📈 Practicante de Datos (Power BI & SQL)", company: "Banco BCP", tags: ["Prácticas", "Tecnología", "Híbrido"], sector: "tecnologia", modality: "hibrido", locationValue: "lima-sanisidro", locationText: "San Isidro", salary: "S/ 1,200", limitDate: "Jun 20" },
+            { title: "🏪 Administrador de Tienda", company: "Tiendas Tambo", tags: ["Tiempo Completo", "Retail", "Presencial"], sector: "retail", modality: "presencial", locationValue: "lima-pueblolibre", locationText: "Pueblo Libre", salary: "S/ 1,800 + Bonos", limitDate: "Jun 30" },
+            { title: "⚽ Coordinador de Operaciones", company: "Club Universitario de Deportes", tags: ["Tiempo Completo", "Deportivo", "Presencial"], sector: "deportivo", modality: "presencial", locationValue: "lima-ate", locationText: "Ate", salary: "S/ 2,500", limitDate: "Jul 05" },
+            { title: "🏛️ Especialista en Políticas Públicas", company: "Ministerio de Trabajo", tags: ["CAS", "Público", "Presencial"], sector: "publico", modality: "presencial", locationValue: "lima-jesusmaria", locationText: "Jesús María", salary: "S/ 4,200", limitDate: "Jun 18" },
+            { title: "💼 Gestor de Proyectos Ágiles", company: "Interbank", tags: ["Tiempo Completo", "Banca", "Híbrido"], sector: "banca", modality: "hibrido", locationValue: "lima-sanisidro", locationText: "San Isidro", salary: "S/ 4,000", limitDate: "Jul 10" },
+            { title: "⚖️ Asistente Legal Corporativo", company: "Estudio Muñiz", tags: ["Tiempo Completo", "Legal", "Híbrido"], sector: "legal", modality: "hibrido", locationValue: "lima-miraflores", locationText: "Miraflores", salary: "S/ 2,500", limitDate: "Jun 25" },
+            { title: "🌱 Gestor de Alianzas Estratégicas", company: "WWF Perú", tags: ["Medio Tiempo", "ONG", "Híbrido"], sector: "ong", modality: "hibrido", locationValue: "lima-lince", locationText: "Lince", salary: "S/ 1,800", limitDate: "Jun 28" },
+            { title: "🛒 Supervisor Comercial", company: "Supermercados Peruanos", tags: ["Tiempo Completo", "Retail", "Presencial"], sector: "retail", modality: "presencial", locationValue: "piura", locationText: "Piura", salary: "S/ 2,800", limitDate: "Jul 02" },
+            
+            { title: "💻 Desarrollador Front-end Jr", company: "Globant", tags: ["Indefinido", "Tecnología", "Virtual"], sector: "tecnologia", modality: "virtual", locationValue: "lima-miraflores", locationText: "Miraflores", salary: "S/ 3,500", limitDate: "Jul 22" },
+            { title: "🏀 Coordinador de Eventos", company: "Federación de Basketball", tags: ["Contrato", "Deportivo", "Presencial"], sector: "deportivo", modality: "presencial", locationValue: "lima-sanmiguel", locationText: "San Miguel", salary: "S/ 2,000", limitDate: "Jul 01" },
+            { title: "📊 Especialista en Inteligencia de Negocios", company: "Belcorp", tags: ["Tiempo Completo", "Consumo", "Híbrido"], sector: "consumo", modality: "hibrido", locationValue: "lima-surco", locationText: "Surco", salary: "S/ 4,500", limitDate: "Jun 15" },
+            { title: "📋 Auditor Interno", company: "PwC Perú", tags: ["Tiempo Completo", "Banca", "Presencial"], sector: "banca", modality: "presencial", locationValue: "arequipa", locationText: "Arequipa", salary: "S/ 3,200", limitDate: "Jun 20" },
+            { title: "🏛️ Analista de Contrataciones", company: "OSCE", tags: ["CAS", "Público", "Presencial"], sector: "publico", modality: "presencial", locationValue: "lima-jesusmaria", locationText: "Jesús María", salary: "S/ 4,200", limitDate: "Jul 11" },
+            { title: "⚖️ Asesor Legal Ambiental", company: "Gobierno Regional del Cusco", tags: ["CAS", "Legal", "Presencial"], sector: "legal", modality: "presencial", locationValue: "cusco", locationText: "Cusco", salary: "S/ 3,800", limitDate: "Jun 29" },
+            { title: "🏥 Administrador de Clínica", company: "Clínica San Felipe", tags: ["Tiempo Completo", "Salud", "Presencial"], sector: "salud", modality: "presencial", locationValue: "lima-jesusmaria", locationText: "Jesús María", salary: "S/ 4,100", limitDate: "Jun 26" },
+            { title: "🏪 Subgerente de Tienda", company: "OXXO", tags: ["Tiempo Completo", "Retail", "Presencial"], sector: "retail", modality: "presencial", locationValue: "lima-sanmiguel", locationText: "San Miguel", salary: "S/ 2,400", limitDate: "Jul 08" },
+            { title: "💻 Especialista SQL Server", company: "Claro Perú", tags: ["Tiempo Completo", "Tecnología", "Híbrido"], sector: "tecnologia", modality: "hibrido", locationValue: "lima-surco", locationText: "Surco", salary: "S/ 4,800", limitDate: "Jul 30" },
+            
+            { title: "🌱 Coordinador de Voluntariado", company: "TECHO Perú", tags: ["Contrato", "ONG", "Híbrido"], sector: "ong", modality: "hibrido", locationValue: "lima-pueblolibre", locationText: "Pueblo Libre", salary: "S/ 2,000", limitDate: "Jun 19" },
+            { title: "📈 Consultor de Estrategia", company: "Apoyo Consultoría", tags: ["Tiempo Completo", "Gestión", "Híbrido"], sector: "gestion", modality: "hibrido", locationValue: "lima-sanisidro", locationText: "San Isidro", salary: "S/ 5,000", limitDate: "Jul 15" },
+            { title: "⚽ Asistente de Marketing Deportivo", company: "Nike Perú", tags: ["Prácticas", "Deportivo", "Híbrido"], sector: "deportivo", modality: "hibrido", locationValue: "lima-miraflores", locationText: "Miraflores", salary: "S/ 1,300", limitDate: "Jun 24" },
+            { title: "📊 Analista Financiero Junior", company: "Scotiabank", tags: ["Tiempo Completo", "Banca", "Virtual"], sector: "banca", modality: "virtual", locationValue: "lima-sanisidro", locationText: "San Isidro", salary: "S/ 2,800", limitDate: "Jul 05" },
+            { title: "⚖️ Practicante de Derecho Corporativo", company: "Rodrigo, Elías & Medrano", tags: ["Prácticas", "Legal", "Presencial"], sector: "legal", modality: "presencial", locationValue: "lima-sanisidro", locationText: "San Isidro", salary: "S/ 1,200", limitDate: "Jun 28" },
+            { title: "🛒 Ejecutivo de Cuentas Clave", company: "Nestlé", tags: ["Tiempo Completo", "Consumo", "Híbrido"], sector: "consumo", modality: "hibrido", locationValue: "lima-ate", locationText: "Ate", salary: "S/ 3,500 + Bonos", limitDate: "Jul 12" },
+            { title: "💻 Ingeniero de Datos Junior", company: "NTT Data", tags: ["Indefinido", "Tecnología", "Virtual"], sector: "tecnologia", modality: "virtual", locationValue: "arequipa", locationText: "Arequipa", salary: "S/ 3,600", limitDate: "Jul 18" },
+            { title: "🚜 Analista de Supply Chain", company: "Camposol", tags: ["Tiempo Completo", "Logística", "Presencial"], sector: "logistica", modality: "presencial", locationValue: "trujillo", locationText: "Trujillo", salary: "S/ 3,200", limitDate: "Jun 22" },
+            { title: "🌱 Practicante de Sostenibilidad", company: "Cálidda", tags: ["Prácticas", "ONG/Gestión", "Híbrido"], sector: "ong", modality: "hibrido", locationValue: "lima-sanmiguel", locationText: "San Miguel", salary: "S/ 1,100", limitDate: "Jun 27" },
+            
+            { title: "📊 Controller Financiero", company: "BBVA", tags: ["Tiempo Completo", "Banca", "Presencial"], sector: "banca", modality: "presencial", locationValue: "lima-sanisidro", locationText: "San Isidro", salary: "S/ 5,500", limitDate: "Jul 20" },
+            { title: "🏪 Jefe de Categoría Retail", company: "Falabella", tags: ["Tiempo Completo", "Retail", "Híbrido"], sector: "retail", modality: "hibrido", locationValue: "lima-surco", locationText: "Surco", salary: "S/ 4,800", limitDate: "Jul 09" },
+            { title: "💻 Arquitecto Cloud AWS", company: "IBM", tags: ["Indefinido", "Tecnología", "Virtual"], sector: "tecnologia", modality: "virtual", locationValue: "lima-lince", locationText: "Lince", salary: "S/ 7,000", limitDate: "Aug 01" },
+            { title: "⚽ Nutricionista Deportivo", company: "Federación Peruana de Fútbol", tags: ["Contrato", "Deportivo", "Presencial"], sector: "deportivo", modality: "presencial", locationValue: "lima-ate", locationText: "Ate (Videna)", salary: "S/ 3,000", limitDate: "Jun 25" },
+            { title: "📈 Administrador de Contratos", company: "GyM", tags: ["Tiempo Completo", "Gestión", "Presencial"], sector: "gestion", modality: "presencial", locationValue: "piura", locationText: "Piura", salary: "S/ 3,800", limitDate: "Jul 14" },
+            { title: "⚖️ Especialista en Derecho Laboral", company: "Ministerio de Trabajo", tags: ["CAS", "Legal/Público", "Híbrido"], sector: "legal", modality: "hibrido", locationValue: "lima-jesusmaria", locationText: "Jesús María", salary: "S/ 4,000", limitDate: "Jul 02" },
+            { title: "🛒 Trade Marketing Junior", company: "Backus", tags: ["Tiempo Completo", "Consumo", "Presencial"], sector: "consumo", modality: "presencial", locationValue: "lima-ate", locationText: "Ate", salary: "S/ 2,600", limitDate: "Jun 21" },
+            { title: "🌱 Analista de Impacto Social", company: "Kunan", tags: ["Medio Tiempo", "ONG", "Virtual"], sector: "ong", modality: "virtual", locationValue: "lima-miraflores", locationText: "Miraflores", salary: "S/ 1,500", limitDate: "Jun 30" },
+            { title: "📚 Diseñador Instruccional", company: "Innova Schools", tags: ["Tiempo Completo", "Educación", "Híbrido"], sector: "educacion", modality: "hibrido", locationValue: "lima-pueblolibre", locationText: "Pueblo Libre", salary: "S/ 2,600", limitDate: "Jul 15" },
+
+            { title: "📱 Community Manager Senior", company: "Caja Piura", tags: ["Tiempo Completo", "Comunicaciones", "Híbrido"], sector: "comunicaciones", modality: "hibrido", locationValue: "piura", locationText: "Piura", salary: "S/ 2,800", limitDate: "Jun 29" },
+            { title: "🏥 Analista de Procesos Clínicos", company: "Clínica Delgado", tags: ["Tiempo Completo", "Salud", "Presencial"], sector: "salud", modality: "presencial", locationValue: "lima-miraflores", locationText: "Miraflores", salary: "S/ 3,500", limitDate: "Jul 04" },
+            { title: "🚜 Practicante de Logística", company: "Ransa", tags: ["Prácticas", "Logística", "Presencial"], sector: "logistica", modality: "presencial", locationValue: "lima-callao", locationText: "Callao", salary: "S/ 1,100", limitDate: "Jun 20" },
+            { title: "📊 Asistente Administrativo", company: "Saga Falabella", tags: ["Tiempo Completo", "Gestión", "Presencial"], sector: "gestion", modality: "presencial", locationValue: "lima-sanmiguel", locationText: "San Miguel", salary: "S/ 1,800", limitDate: "Jul 12" },
+            { title: "⚖️ Abogado Tributarista Jr.", company: "KPMG", tags: ["Tiempo Completo", "Legal", "Híbrido"], sector: "legal", modality: "hibrido", locationValue: "lima-sanisidro", locationText: "San Isidro", salary: "S/ 3,400", limitDate: "Jul 25" },
+            { title: "💻 DevOps Engineer", company: "Canvia", tags: ["Indefinido", "Tecnología", "Virtual"], sector: "tecnologia", modality: "virtual", locationValue: "lima-lince", locationText: "Lince", salary: "S/ 5,500", limitDate: "Aug 10" },
+            { title: "⚽ Redactor Deportivo", company: "Depor", tags: ["Medio Tiempo", "Comunicaciones", "Híbrido"], sector: "comunicaciones", modality: "hibrido", locationValue: "lima-pueblolibre", locationText: "Pueblo Libre", salary: "S/ 1,500", limitDate: "Jun 22" },
+            { title: "🛒 Promotor de Ventas Retail", company: "Sony", tags: ["Tiempo Completo", "Retail", "Presencial"], sector: "retail", modality: "presencial", locationValue: "lima-surco", locationText: "Surco", salary: "S/ 1,500 + Comisiones", limitDate: "Jul 05" },
+            { title: "🏛️ Asistente de Archivo Central", company: "RENIEC", tags: ["CAS", "Público", "Presencial"], sector: "publico", modality: "presencial", locationValue: "lima-jesusmaria", locationText: "Jesús María", salary: "S/ 2,200", limitDate: "Jun 28" },
+
+            { title: "🌱 Asistente de Proyectos Sociales", company: "Cáritas del Perú", tags: ["Contrato", "ONG", "Presencial"], sector: "ong", modality: "presencial", locationValue: "lima-pueblolibre", locationText: "Pueblo Libre", salary: "S/ 2,000", limitDate: "Jul 10" },
+            { title: "💼 Ejecutivo de Banca Personal", company: "Interbank", tags: ["Tiempo Completo", "Banca", "Presencial"], sector: "banca", modality: "presencial", locationValue: "lima-sanmiguel", locationText: "San Miguel", salary: "S/ 2,500", limitDate: "Jul 02" },
+            { title: "📚 Docente de Innovación Escolar", company: "Innova Schools", tags: ["Tiempo Completo", "Educación", "Presencial"], sector: "educacion", modality: "presencial", locationValue: "lima-ate", locationText: "Ate", salary: "S/ 2,800", limitDate: "Jul 20" },
+            { title: "🏥 Enfermero/a Ocupacional", company: "Auna", tags: ["Tiempo Completo", "Salud", "Presencial"], sector: "salud", modality: "presencial", locationValue: "arequipa", locationText: "Arequipa", salary: "S/ 3,000", limitDate: "Jun 25" },
+            { title: "🚜 Supervisor de Flota", company: "Dinet", tags: ["Tiempo Completo", "Logística", "Híbrido"], sector: "logistica", modality: "hibrido", locationValue: "lima-callao", locationText: "Callao", salary: "S/ 3,500", limitDate: "Jul 15" },
+            { title: "📊 Asistente de RRHH", company: "Sodexo", tags: ["Tiempo Completo", "Gestión", "Presencial"], sector: "gestion", modality: "presencial", locationValue: "lima-sanisidro", locationText: "San Isidro", salary: "S/ 2,000", limitDate: "Jun 30" },
+            { title: "📱 Productor Audiovisual", company: "Latina Televisión", tags: ["Contrato", "Comunicaciones", "Presencial"], sector: "comunicaciones", modality: "presencial", locationValue: "lima-jesusmaria", locationText: "Jesús María", salary: "S/ 3,200", limitDate: "Jul 05" },
+            { title: "💻 Desarrollador Backend (Java)", company: "TCS", tags: ["Indefinido", "Tecnología", "Virtual"], sector: "tecnologia", modality: "virtual", locationValue: "lima-surco", locationText: "Surco", salary: "S/ 6,000", limitDate: "Aug 05" },
+            { title: "⚖️ Conciliador Extrajudicial", company: "Centro de Conciliación Paz", tags: ["Tiempo Completo", "Legal", "Presencial"], sector: "legal", modality: "presencial", locationValue: "lima-lince", locationText: "Lince", salary: "S/ 2,400", limitDate: "Jul 12" }
+        ];
+
+        let filteredJobs = [...jobsData];
+        let currentPage = 1;
+        const jobsPerPage = 9;
+        const jobsContainer = document.getElementById('jobsContainer');
+        const paginationContainer = document.getElementById('paginationContainer');
+
+        function renderJobs() {
+            jobsContainer.innerHTML = '';
+            if (filteredJobs.length === 0) {
+                jobsContainer.innerHTML = '<div class="no-results">No se encontraron ofertas con los filtros seleccionados. 😥</div>';
+                paginationContainer.innerHTML = '';
+                return;
+            }
+            const startIndex = (currentPage - 1) * jobsPerPage;
+            const endIndex = startIndex + jobsPerPage;
+            const jobsToShow = filteredJobs.slice(startIndex, endIndex);
+
+            jobsToShow.forEach(job => {
+                const tagsHtml = job.tags.map((tag, index) => {
+                    let tagClass = index === 1 ? 'tag-sector' : (index === 2 ? 'tag-modality' : '');
+                    return `<span class="job-tag ${tagClass}">${tag}</span>`;
+                }).join('');
+
+                const cardHtml = `
+                    <div class="job-card">
+                        <div>
+                            <h3>${job.title}</h3>
+                            <div class="company-name">${job.company}</div>
+                            <div class="job-tags">${tagsHtml}</div>
+                        </div>
+                        <div class="job-details">
+                            <div class="detail-item"><strong>Ubicación:</strong> ${job.locationText}</div>
+                            <div class="detail-item"><strong>Salario:</strong> ${job.salary}</div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-btn star" onclick="toggleBtn(this, 'star')" title="Guardar oferta">☆</button>
+                            <button class="action-btn dislike" onclick="toggleBtn(this, 'dislike')" title="Descartar">✕</button>
+                            <span class="apply-date">Aplicar antes del ${job.limitDate}</span>
+                        </div>
+                    </div>
+                `;
+                jobsContainer.innerHTML += cardHtml;
+            });
+            renderPagination();
+        }
+
+        function renderPagination() {
+            paginationContainer.innerHTML = '';
+            const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+            if (totalPages <= 1) return;
+
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn'; prevBtn.innerText = '← Ant';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => { currentPage--; renderJobs(); };
+            paginationContainer.appendChild(prevBtn);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-btn ${currentPage === i ? 'active' : ''}`;
+                pageBtn.innerText = i;
+                pageBtn.onclick = () => { currentPage = i; renderJobs(); };
+                paginationContainer.appendChild(pageBtn);
+            }
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn'; nextBtn.innerText = 'Sig →';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => { currentPage++; renderJobs(); };
+            paginationContainer.appendChild(nextBtn);
+        }
+
+        function toggleBtn(btn, type) {
+            btn.classList.toggle('active');
+            if(type === 'star') btn.innerText = btn.classList.contains('active') ? '★' : '☆';
+        }
+
+        function filterData() {
+            const fSector = document.getElementById('filterSector').value;
+            const fModality = document.getElementById('filterModality').value;
+            const fLocation = document.getElementById('filterLocation').value;
+
+            filteredJobs = jobsData.filter(job => {
+                const matchSector = (fSector === 'todos' || fSector === job.sector);
+                const matchModality = (fModality === 'todos' || fModality === job.modality);
+                const matchLocation = (fLocation === 'todos' || fLocation === job.locationValue || (fLocation === 'lima' && job.locationValue.startsWith('lima')));
+                return matchSector && matchModality && matchLocation;
+            });
+            currentPage = 1; renderJobs();
+        }
+
+        document.getElementById('filterSector').addEventListener('change', filterData);
+        document.getElementById('filterModality').addEventListener('change', filterData);
+        document.getElementById('filterLocation').addEventListener('change', filterData);
+
+        // ==========================================
+        // LÓGICA DE LOGIN (HISTORIA 18)
+        // ==========================================
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const consentModal = document.getElementById('consentModal');
+        const welcomeModal = document.getElementById('welcomeModal');
+        let failedAttempts = 0;
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btnSubmit = document.getElementById('btnSubmit');
+            const errorMsg = document.getElementById('errorMsg');
+            const codigoInput = document.getElementById('codigo');
+            const passwordInput = document.getElementById('password');
+            
+            errorMsg.style.display = 'none';
+            codigoInput.className = ''; passwordInput.className = '';
+            btnSubmit.innerHTML = 'Verificando...';
+            
+            setTimeout(() => {
+                if (codigoInput.value.trim() === '20210777' && passwordInput.value.trim() === 'pucp2026') {
+                    failedAttempts = 0; consentModal.style.display = 'flex';
+                } else {
+                    failedAttempts++;
+                    if (failedAttempts === 4) {
+                        codigoInput.classList.add('warning-border'); passwordInput.classList.add('warning-border');
+                        errorMsg.className = 'error-message warning-message';
+                        errorMsg.innerHTML = '⚠️ <strong>Alerta de Seguridad:</strong> Has realizado 4 intentos fallidos. Por políticas institucionales, tu cuenta será congelada al próximo error.';
+                        errorMsg.style.display = 'block';
+                    } else if (failedAttempts >= 5) {
+                        codigoInput.classList.add('error-border'); passwordInput.classList.add('error-border');
+                        errorMsg.className = 'error-message';
+                        errorMsg.innerHTML = '🚫 <strong>Acceso Congelado:</strong> Por tu seguridad, hemos bloqueado el inicio de sesión tras 5 intentos fallidos. Restablece tu contraseña en el Campus Virtual.';
+                        errorMsg.style.display = 'block';
+                        codigoInput.disabled = true; passwordInput.disabled = true; btnSubmit.disabled = true;
+                        btnSubmit.innerHTML = 'Sistema Bloqueado';
+                        return;
+                    } else {
+                        codigoInput.classList.add('error-border'); passwordInput.classList.add('error-border');
+                        errorMsg.className = 'error-message';
+                        errorMsg.innerHTML = `Código o contraseña institucional incorrectos. Verifica tus accesos. (Intento ${failedAttempts} de 5)`;
+                        errorMsg.style.display = 'block';
+                    }
+                }
+                btnSubmit.innerHTML = 'Iniciar Sesión';
+            }, 800); 
+        });
+
+        // ==========================================
+        // LÓGICA DEL MINI TUTORIAL (HISTORIA 24)
+        // ==========================================
+        const tutorialModal = document.getElementById('tutorialModal');
+        const btnOpenTutorial = document.getElementById('btnOpenTutorial');
+        const btnCloseTutorial = document.getElementById('btnCloseTutorial');
+        const btnNextSlide = document.getElementById('btnNextSlide');
+        const btnPrevSlide = document.getElementById('btnPrevSlide');
+        const btnFinishTutorial = document.getElementById('btnFinishTutorial');
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            slides.forEach(s => s.classList.remove('active'));
+            dots.forEach(d => d.classList.remove('active'));
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+
+            btnPrevSlide.style.display = index === 0 ? 'none' : 'block';
+            
+            if (index === slides.length - 1) {
+                btnNextSlide.style.display = 'none';
+                btnFinishTutorial.style.display = 'block';
+                btnPrevSlide.style.width = '48%';
+            } else if (index === 0) {
+                btnNextSlide.style.display = 'block';
+                btnNextSlide.style.width = '100%';
+                btnFinishTutorial.style.display = 'none';
+            } else {
+                btnNextSlide.style.display = 'block';
+                btnNextSlide.style.width = '48%';
+                btnPrevSlide.style.width = '48%';
+                btnFinishTutorial.style.display = 'none';
+            }
+        }
+
+        btnOpenTutorial.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentSlide = 0; showSlide(currentSlide);
+            tutorialModal.style.display = 'flex';
+        });
+
+        btnCloseTutorial.addEventListener('click', () => { tutorialModal.style.display = 'none'; });
+        btnFinishTutorial.addEventListener('click', () => { tutorialModal.style.display = 'none'; });
+
+        btnNextSlide.addEventListener('click', () => { if (currentSlide < slides.length - 1) { currentSlide++; showSlide(currentSlide); } });
+        btnPrevSlide.addEventListener('click', () => { if (currentSlide > 0) { currentSlide--; showSlide(currentSlide); } });
+
+        // ==========================================
+        // NAVEGACIÓN Y LOGOUT
+        // ==========================================
+        document.getElementById('btnRejectConsent').addEventListener('click', () => { consentModal.style.display = 'none'; document.getElementById('codigo').value = ''; document.getElementById('password').value = ''; });
+        document.getElementById('btnAcceptConsent').addEventListener('click', () => { consentModal.style.display = 'none'; welcomeModal.style.display = 'flex'; });
+        document.getElementById('btnContinueDashboard').addEventListener('click', () => { welcomeModal.style.display = 'none'; loginView.style.display = 'none'; dashboardView.style.display = 'block'; renderJobs(); });
+
+        const profileBtn = document.getElementById('profileBtn');
+        const profileDropdown = document.getElementById('profileDropdown');
+        profileBtn.addEventListener('click', (e) => { profileDropdown.classList.toggle('show'); e.stopPropagation(); });
+        window.addEventListener('click', (e) => { if (!profileBtn.contains(e.target)) profileDropdown.classList.remove('show'); });
+
+        document.getElementById('btnLogout').addEventListener('click', (e) => {
+            e.preventDefault();
+            dashboardView.style.display = 'none'; loginView.style.display = 'flex';
+            const cInput = document.getElementById('codigo'); const pInput = document.getElementById('password');
+            cInput.value = ''; pInput.value = ''; cInput.className = ''; pInput.className = '';
+            cInput.disabled = false; pInput.disabled = false; document.getElementById('errorMsg').style.display = 'none';
+            const bSubmit = document.getElementById('btnSubmit'); bSubmit.disabled = false; bSubmit.innerHTML = 'Iniciar Sesión';
+            failedAttempts = 0; profileDropdown.classList.remove('show');
+        });
+
+        // ==========================================
+        // LÓGICA DE ACCESIBILIDAD (DALTONISMO)
+        // ==========================================
+        const accMenus = [
+            { btn: document.getElementById('accLoginBtn'), drop: document.getElementById('accLoginDropdown') },
+            { btn: document.getElementById('accDashBtn'), drop: document.getElementById('accDashDropdown') }
+        ];
+
+        accMenus.forEach(menu => {
+            menu.btn.addEventListener('click', (e) => {
+                menu.drop.classList.toggle('show');
+                e.stopPropagation();
+            });
+        });
+
+        window.addEventListener('click', (e) => {
+            accMenus.forEach(menu => {
+                if (!menu.btn.contains(e.target)) menu.drop.classList.remove('show');
+            });
+        });
+
+        const themeLinks = document.querySelectorAll('.acc-dropdown a');
+        themeLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const theme = link.getAttribute('data-theme');
+                
+                // Actualizar los checks visuales en ambos menús desplegables
+                themeLinks.forEach(l => {
+                    l.classList.remove('active');
+                    if(l.getAttribute('data-theme') === theme) {
+                        l.classList.add('active');
+                    }
+                });
+
+                // Limpiar clases previas y aplicar el nuevo filtro visual en todo el documento
+                document.documentElement.className = '';
+                if (theme !== 'normal') {
+                    document.documentElement.classList.add(theme);
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
