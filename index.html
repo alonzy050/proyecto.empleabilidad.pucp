@@ -23,11 +23,8 @@
         /* =========================================
            FILTROS GLOBALES DE ACCESIBILIDAD (DALTONISMO)
         ========================================= */
-        /* Rojo-Verde (Protanopia/Deuteranopia): Aumenta contraste y rota matices para separar rojos de verdes */
         html.theme-rv { filter: contrast(1.1) saturate(1.5) hue-rotate(-25deg); }
-        /* Azul-Amarillo (Tritanopia): Invierte y resalta el eje de colores conflictivos */
         html.theme-aa { filter: contrast(1.1) saturate(1.5) hue-rotate(180deg); }
-        /* Visión Monocromática (Acromatopsia): Escala de grises de alto contraste */
         html.theme-completo { filter: grayscale(100%) contrast(1.2); }
 
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg-gray); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
@@ -53,10 +50,7 @@
         }
         .main-container::before { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(10, 28, 64, 0.45); }
 
-        .login-card { 
-            background: white; border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.35); width: 100%; max-width: 450px; padding: 40px; box-sizing: border-box; position: relative; z-index: 10;
-        }
-
+        .login-card { background: white; border-radius: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.35); width: 100%; max-width: 450px; padding: 40px; box-sizing: border-box; position: relative; z-index: 10; }
         .login-card h2 { color: var(--pucp-blue); text-align: center; margin-top: 0; margin-bottom: 5px; font-size: 1.4rem; line-height: 1.2;}
         .login-card p.subtitle { text-align: center; color: var(--text-gray); margin-bottom: 30px; font-size: 0.95rem; }
         .info-banner { background-color: #F3EAFB; border-left: 4px solid var(--pucp-purple); padding: 15px; border-radius: 4px; margin-bottom: 25px; }
@@ -66,18 +60,15 @@
         .form-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; font-weight: 600; color: var(--pucp-blue); }
         .form-group input { width: 100%; padding: 12px; border: 1px solid #CCCCCC; border-radius: 6px; box-sizing: border-box; font-size: 1rem; transition: all 0.3s; }
         .form-group input:focus { outline: none; border-color: var(--pucp-purple); box-shadow: 0 0 0 3px rgba(106, 53, 156, 0.1); }
-        
         .form-group input.error-border { border-color: var(--pucp-red); background-color: #FFFAFA; }
         .form-group input.warning-border { border-color: var(--warning-orange); background-color: #FFF8E1; }
         .form-group input:disabled { background-color: #F0F0F0; border-color: #E0E0E0; color: #999; cursor: not-allowed; }
-        
         .error-message { display: none; color: var(--pucp-red); font-size: 0.85rem; margin-top: 8px; font-weight: 500; line-height: 1.4; padding: 10px; border-radius: 4px; background-color: #FFFAFA; border-left: 3px solid var(--pucp-red); }
         .warning-message { color: var(--warning-orange); background-color: #FFF8E1; border-left-color: var(--warning-orange); }
         
         button.btn-primary { width: 100%; background-color: var(--pucp-purple-hover); color: white; border: none; padding: 14px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background-color 0.3s; margin-top: 10px; }
         button.btn-primary:hover:not(:disabled) { background-color: var(--pucp-blue); }
         button.btn-primary:disabled { background-color: #BDBDBD; cursor: not-allowed; color: #FFFFFF; }
-        
         button.btn-secondary { width: 100%; background-color: transparent; color: var(--text-gray); border: 1px solid var(--border-light); padding: 14px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.3s; margin-top: 10px; }
         button.btn-secondary:hover { background-color: var(--bg-gray); color: var(--pucp-red); border-color: var(--pucp-red); }
         
@@ -145,7 +136,7 @@
         .filter-group select { width: 100%; padding: 10px; border: 1px solid var(--border-light); border-radius: 6px; font-size: 0.95rem; color: var(--text-dark); outline: none; }
         optgroup { font-weight: bold; color: var(--pucp-blue); }
 
-        /* TARJETAS DE EMPLEO CON ACCIONES */
+        /* TARJETAS DE EMPLEO */
         .jobs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
         .job-card { background: white; padding: 25px 25px 15px 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border-top: 4px solid var(--pucp-blue); display: flex; flex-direction: column; justify-content: space-between; }
         .job-card h3 { margin: 0 0 8px 0; color: var(--pucp-blue); font-size: 1.15rem; display: flex; align-items: center; gap: 8px; line-height: 1.3;}
@@ -173,10 +164,47 @@
         .page-btn.active { background-color: var(--pucp-blue); color: white; border-color: var(--pucp-blue); }
         .page-btn:disabled { color: #CCC; cursor: not-allowed; }
         .no-results { grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-gray); font-size: 1.1rem; }
+
+        /* =========================================
+           NUEVO: ESTILOS VISTA MENTORING 
+        ========================================= */
+        #mentoring-wrapper { animation: fadeIn 0.3s; }
+        .mentoring-tabs { display: flex; border-bottom: 1px solid var(--border-light); margin-bottom: 25px; }
+        .mentoring-tabs .tab { padding: 12px 25px; cursor: pointer; color: var(--text-gray); font-weight: 600; font-size: 0.95rem;}
+        .mentoring-tabs .tab.active { color: var(--pucp-blue); border-bottom: 3px solid var(--pucp-blue); }
+        
+        .mentoring-search-box { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid var(--border-light); }
+        .mentoring-search-box label { display: block; margin-bottom: 10px; color: var(--text-dark); font-weight: 500; font-size: 0.9rem;}
+        .mentoring-input { width: 100%; max-width: 500px; padding: 12px; border: 1px solid #CCC; border-radius: 4px; font-size: 1rem; outline: none; }
+        .mentoring-input:focus { border-color: var(--pucp-blue); }
+        
+        .mentoring-actions { display: flex; gap: 20px; align-items: center; margin-top: 20px; }
+        .mentoring-actions .btn-search { background-color: var(--pucp-blue); color: white; border: none; padding: 10px 30px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.3s;}
+        .mentoring-actions .btn-search:hover { background-color: var(--pucp-purple-hover); }
+        .mentoring-actions .btn-text { background: none; border: none; color: var(--pucp-blue); font-weight: bold; cursor: pointer; padding: 0;}
+        .mentoring-actions .btn-text:hover { text-decoration: underline; }
+
+        .mentoring-results-header { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-gray); margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border-light); }
+        
+        .mentor-item { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 25px; border: 1px solid var(--border-light); flex-wrap: wrap;}
+        .mentor-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-light);}
+        .mentor-info { flex: 1; min-width: 250px;}
+        .mentor-name { margin: 0 0 8px 0; color: var(--pucp-blue); display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 500;}
+        .linkedin-icon { background: #0A66C2; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+        .mentor-title { margin: 0 0 5px 0; color: var(--text-dark); font-size: 0.95rem; }
+        .mentor-career { margin: 0; color: var(--text-gray); font-size: 0.9rem; }
+        
+        .btn-outline-primary { background: transparent; border: 1px solid var(--pucp-blue); color: var(--pucp-blue); padding: 12px 25px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: all 0.3s; white-space: nowrap;}
+        .btn-outline-primary:hover { background: var(--pucp-blue); color: white; }
+
+        .btn-back { background: none; border: none; color: var(--text-gray); font-weight: bold; cursor: pointer; margin-bottom: 20px; padding: 0; font-size: 0.9rem; display: flex; align-items: center; gap: 5px;}
+        .btn-back:hover { color: var(--pucp-blue); }
+
     </style>
 </head>
 <body>
 
+    <!-- VISTA LOGIN -->
     <div id="login-view" style="display: flex; flex-direction: column; width: 100%; min-height: 100vh;">
         <header class="login-header">
             <img src="https://i.ibb.co/7dk3RCVw/logo-pucp2.png" alt="Logo PUCP">
@@ -217,32 +245,21 @@
         </div>
     </div>
 
+    <!-- MODALES GLOBALES -->
     <div id="tutorialModal" class="modal-overlay">
         <div class="modal-box tutorial-box">
             <button id="btnCloseTutorial" class="close-cross" title="Cerrar">✕</button>
-            
             <div class="slide active" id="slide0">
-                <div class="modal-icon">🔗</div>
-                <h3>1. Una Sola Identidad</h3>
-                <p>Despídete de la "fatiga de contraseñas". Ahora la Bolsa de Trabajo utiliza la misma llave que tu Campus Virtual e Intranet.</p>
+                <div class="modal-icon">🔗</div><h3>1. Una Sola Identidad</h3><p>Despídete de la "fatiga de contraseñas". Ahora la Bolsa de Trabajo utiliza la misma llave que tu Campus Virtual e Intranet.</p>
             </div>
             <div class="slide" id="slide1">
-                <div class="modal-icon">⚡</div>
-                <h3>2. Tu Perfil Automático</h3>
-                <p>Al ingresar, el sistema detecta instantáneamente tu ciclo y carrera para recomendarte vacantes precisas sin llenar formularios eternos.</p>
+                <div class="modal-icon">⚡</div><h3>2. Tu Perfil Automático</h3><p>Al ingresar, el sistema detecta instantáneamente tu ciclo y carrera para recomendarte vacantes precisas sin llenar formularios eternos.</p>
             </div>
             <div class="slide" id="slide2">
-                <div class="modal-icon">🛡️</div>
-                <h3>3. Seguridad Institucional</h3>
-                <p>Al centralizar el acceso, tus datos están doblemente protegidos por la infraestructura oficial de tecnologías de la PUCP.</p>
+                <div class="modal-icon">🛡️</div><h3>3. Seguridad Institucional</h3><p>Al centralizar el acceso, tus datos están doblemente protegidos por la infraestructura oficial de tecnologías de la PUCP.</p>
             </div>
-
             <div class="tutorial-controls">
-                <div class="dots">
-                    <span class="dot active"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
+                <div class="dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
                 <div class="tutorial-btns">
                     <button id="btnPrevSlide" class="btn-secondary" style="display:none; width: 48%;">Atrás</button>
                     <button id="btnNextSlide" class="btn-primary" style="width: 100%;">Siguiente Paso</button>
@@ -267,15 +284,15 @@
         <div class="modal-box">
             <div class="modal-icon">🎉</div>
             <h3>¡Unificación Exitosa!</h3>
-            <p>Hemos vinculado tu cuenta de Campus Virtual correctamente. A partir de hoy, esta será tu única forma de ingreso al portal laboral. Ya no tendrás que preocuparte por recordar contraseñas extra.</p>
+            <p>Hemos vinculado tu cuenta de Campus Virtual correctamente. A partir de hoy, esta será tu única forma de ingreso al portal laboral.</p>
             <button id="btnContinueDashboard" class="btn-primary">Continuar a mi perfil</button>
         </div>
     </div>
 
+    <!-- VISTA PRINCIPAL DASHBOARD -->
     <div id="dashboard-view">
         <nav class="dash-nav">
             <div class="dash-nav-logo"><img src="https://i.ibb.co/7dk3RCVw/logo-pucp2.png" alt="Logo PUCP"><span>Empleabilidad</span></div>
-            
             <div class="dash-nav-right">
                 <div class="accessibility-menu" id="accDashBtn">
                     <div class="acc-icon" title="Opciones de Accesibilidad">👁️</div>
@@ -286,7 +303,6 @@
                         <a href="#" data-theme="theme-completo">Visión Monocromática</a>
                     </div>
                 </div>
-
                 <div class="notification-icon">🔔<div class="notification-dot"></div></div>
                 <div class="user-profile-menu" id="profileBtn">
                     <div class="avatar-circle">👤</div><div class="arrow-down">▼</div>
@@ -299,77 +315,121 @@
         </nav>
 
         <div class="dash-content">
-            <div class="welcome-section">
-                <h2>¡Hola, Juana! 👋</h2>
-                <p style="color: var(--text-gray); margin-bottom: 25px;">Impulsa tu carrera con nuestras herramientas integradas.</p>
-                <div class="quick-services-grid">
-                    <div class="service-card"><div class="service-icon ic-1">🤝</div><h4>Mentoring</h4><p>Recibe asesoramiento del mundo real y conexiones.</p></div>
-                    <div class="service-card"><div class="service-icon ic-2">👥</div><h4>Simulador de entrevistas</h4><p>Espacio práctico de ensayo previo.</p></div>
-                    <div class="service-card"><div class="service-icon ic-3">📑</div><h4>Generador de CV</h4><p>Crea tu resumen profesional velozmente.</p></div>
-                    <div class="service-card"><div class="service-icon ic-4">👤</div><h4>Perfil público</h4><p>Exhibe tus logros académicos.</p></div>
-                    <div class="service-card"><div class="service-icon ic-5">📄</div><h4>Agregar currículum</h4><p>Carga tu CV para comenzar la búsqueda.</p></div>
+            <!-- WRAPPER DASHBOARD OFERTAS (Por defecto visible) -->
+            <div id="main-dash-wrapper">
+                <div class="welcome-section">
+                    <h2>¡Hola, Juana! 👋</h2>
+                    <p style="color: var(--text-gray); margin-bottom: 25px;">Impulsa tu carrera con nuestras herramientas integradas.</p>
+                    <div class="quick-services-grid">
+                        <!-- Botón Mentoring con ID agregado para funcionalidad SPA -->
+                        <div class="service-card" id="btnMentoringService"><div class="service-icon ic-1">🤝</div><h4>Mentoring</h4><p>Recibe asesoramiento del mundo real y conexiones.</p></div>
+                        <div class="service-card"><div class="service-icon ic-2">👥</div><h4>Simulador de entrevistas</h4><p>Espacio práctico de ensayo previo.</p></div>
+                        <div class="service-card"><div class="service-icon ic-3">📑</div><h4>Generador de CV</h4><p>Crea tu resumen profesional velozmente.</p></div>
+                        <div class="service-card"><div class="service-icon ic-4">👤</div><h4>Perfil público</h4><p>Exhibe tus logros académicos.</p></div>
+                        <div class="service-card"><div class="service-icon ic-5">📄</div><h4>Agregar currículum</h4><p>Carga tu CV para comenzar la búsqueda.</p></div>
+                    </div>
                 </div>
+
+                <div class="filters-section">
+                    <div class="filter-group">
+                        <label>Sector</label>
+                        <select id="filterSector">
+                            <option value="todos">Todos los sectores</option>
+                            <option value="gestion">Gestión / Administración</option>
+                            <option value="tecnologia">Tecnología / Software</option>
+                            <option value="consumo">Consumo Masivo</option>
+                            <option value="retail">Retail / Comercio</option>
+                            <option value="publico">Sector Público</option>
+                            <option value="deportivo">Deportivo / Entretenimiento</option>
+                            <option value="banca">Banca y Finanzas</option>
+                            <option value="legal">Legal / Derecho</option>
+                            <option value="ong">ONG / Social</option>
+                            <option value="salud">Salud / Clínico</option>
+                            <option value="logistica">Logística / Operaciones</option>
+                            <option value="educacion">Educación / Docencia</option>
+                            <option value="comunicaciones">Comunicaciones / Mkt</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Modalidad</label>
+                        <select id="filterModality">
+                            <option value="todos">Todas las modalidades</option>
+                            <option value="presencial">Presencial</option>
+                            <option value="hibrido">Híbrido</option>
+                            <option value="virtual">Virtual / Remoto</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Ubicación</label>
+                        <select id="filterLocation">
+                            <option value="todos">Todas las ubicaciones</option>
+                            <optgroup label="Lima y Callao (Distritos)">
+                                <option value="lima">📍 Todo Lima y Callao</option>
+                                <option value="lima-sanisidro">San Isidro</option>
+                                <option value="lima-miraflores">Miraflores</option>
+                                <option value="lima-pueblolibre">Pueblo Libre</option>
+                                <option value="lima-jesusmaria">Jesús María</option>
+                                <option value="lima-surco">Surco</option>
+                                <option value="lima-sanmiguel">San Miguel</option>
+                                <option value="lima-lince">Lince</option>
+                                <option value="lima-ate">Ate</option>
+                                <option value="lima-callao">Callao</option>
+                            </optgroup>
+                            <optgroup label="Provincias">
+                                <option value="arequipa">Arequipa</option>
+                                <option value="piura">Piura</option>
+                                <option value="cusco">Cusco</option>
+                                <option value="ancash">Áncash</option>
+                                <option value="trujillo">La Libertad (Trujillo)</option>
+                                <option value="lambayeque">Lambayeque (Chiclayo)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="jobs-grid" id="jobsContainer"></div>
+                <div class="pagination-container" id="paginationContainer"></div>
             </div>
 
-            <div class="filters-section">
-                <div class="filter-group">
-                    <label>Sector</label>
-                    <select id="filterSector">
-                        <option value="todos">Todos los sectores</option>
-                        <option value="gestion">Gestión / Administración</option>
-                        <option value="tecnologia">Tecnología / Software</option>
-                        <option value="consumo">Consumo Masivo</option>
-                        <option value="retail">Retail / Comercio</option>
-                        <option value="publico">Sector Público</option>
-                        <option value="deportivo">Deportivo / Entretenimiento</option>
-                        <option value="banca">Banca y Finanzas</option>
-                        <option value="legal">Legal / Derecho</option>
-                        <option value="ong">ONG / Social</option>
-                        <option value="salud">Salud / Clínico</option>
-                        <option value="logistica">Logística / Operaciones</option>
-                        <option value="educacion">Educación / Docencia</option>
-                        <option value="comunicaciones">Comunicaciones / Mkt</option>
-                    </select>
+            <!-- NUEVO: WRAPPER MENTORING (Oculto por defecto) -->
+            <div id="mentoring-wrapper" style="display: none;">
+                <button id="btnBackToDash" class="btn-back">← Volver al inicio</button>
+
+                <div class="mentoring-tabs">
+                    <div class="tab">Mis tutores</div>
+                    <div class="tab active">Buscar tutores</div>
                 </div>
-                <div class="filter-group">
-                    <label>Modalidad</label>
-                    <select id="filterModality">
-                        <option value="todos">Todas las modalidades</option>
-                        <option value="presencial">Presencial</option>
-                        <option value="hibrido">Híbrido</option>
-                        <option value="virtual">Virtual / Remoto</option>
-                    </select>
+
+                <div class="mentoring-search-box">
+                    <label>Buscar por palabras clave</label>
+                    <input type="text" class="mentoring-input" placeholder="">
+                    <div class="mentoring-actions">
+                        <button class="btn-search">Buscar</button>
+                        <button class="btn-text">Borrar</button>
+                        <button class="btn-text" style="margin-left: 10px;">Más Filtros</button>
+                    </div>
                 </div>
-                <div class="filter-group">
-                    <label>Ubicación</label>
-                    <select id="filterLocation">
-                        <option value="todos">Todas las ubicaciones</option>
-                        <optgroup label="Lima y Callao (Distritos)">
-                            <option value="lima">📍 Todo Lima y Callao</option>
-                            <option value="lima-sanisidro">San Isidro</option>
-                            <option value="lima-miraflores">Miraflores</option>
-                            <option value="lima-pueblolibre">Pueblo Libre</option>
-                            <option value="lima-jesusmaria">Jesús María</option>
-                            <option value="lima-surco">Surco</option>
-                            <option value="lima-sanmiguel">San Miguel</option>
-                            <option value="lima-lince">Lince</option>
-                            <option value="lima-ate">Ate</option>
-                            <option value="lima-callao">Callao</option>
-                        </optgroup>
-                        <optgroup label="Provincias">
-                            <option value="arequipa">Arequipa</option>
-                            <option value="piura">Piura</option>
-                            <option value="cusco">Cusco</option>
-                            <option value="ancash">Áncash</option>
-                            <option value="trujillo">La Libertad (Trujillo)</option>
-                            <option value="lambayeque">Lambayeque (Chiclayo)</option>
-                        </optgroup>
-                    </select>
+
+                <div class="mentoring-results-header">
+                    <span>1-1 de 64 resultados</span>
+                    <span style="cursor:pointer;">Mostrar 20 ⌄</span>
+                </div>
+
+                <div class="mentor-list">
+                    <!-- Tarjeta de Pierre Roncal con imagen extraída y ligeramente más grande -->
+                    <div class="mentor-item">
+                        <img src="https://i.ibb.co/k62Y1pCJ/roncal.jpg" alt="Pierre Roncal" class="mentor-img">
+                        <div class="mentor-info">
+                            <h3 class="mentor-name">Pierre Roncal <span class="linkedin-icon">in</span></h3>
+                            <p class="mentor-title">Senior Program Manager at BBVA | Docente PUCP</p>
+                            <p class="mentor-career">Ingeniería Industrial</p>
+                        </div>
+                        <button class="btn-outline-primary">Solicitar Asesoramiento</button>
+                    </div>
                 </div>
             </div>
+            <!-- FIN WRAPPER MENTORING -->
 
-            <div class="jobs-grid" id="jobsContainer"></div>
-            <div class="pagination-container" id="paginationContainer"></div>
         </div>
     </div>
 
@@ -644,6 +704,25 @@
         profileBtn.addEventListener('click', (e) => { profileDropdown.classList.toggle('show'); e.stopPropagation(); });
         window.addEventListener('click', (e) => { if (!profileBtn.contains(e.target)) profileDropdown.classList.remove('show'); });
 
+        // ==========================================
+        // NUEVO: LÓGICA SPA PARA SECCIÓN MENTORING
+        // ==========================================
+        const btnMentoringService = document.getElementById('btnMentoringService');
+        const mainDashWrapper = document.getElementById('main-dash-wrapper');
+        const mentoringWrapper = document.getElementById('mentoring-wrapper');
+        const btnBackToDash = document.getElementById('btnBackToDash');
+
+        btnMentoringService.addEventListener('click', () => {
+            mainDashWrapper.style.display = 'none';
+            mentoringWrapper.style.display = 'block';
+        });
+
+        btnBackToDash.addEventListener('click', () => {
+            mentoringWrapper.style.display = 'none';
+            mainDashWrapper.style.display = 'block';
+        });
+
+        // Actualizar logout para resetear vistas
         document.getElementById('btnLogout').addEventListener('click', (e) => {
             e.preventDefault();
             dashboardView.style.display = 'none'; loginView.style.display = 'flex';
@@ -652,6 +731,10 @@
             cInput.disabled = false; pInput.disabled = false; document.getElementById('errorMsg').style.display = 'none';
             const bSubmit = document.getElementById('btnSubmit'); bSubmit.disabled = false; bSubmit.innerHTML = 'Iniciar Sesión';
             failedAttempts = 0; profileDropdown.classList.remove('show');
+            
+            // Regresar a vista principal de dashboard al cerrar sesión
+            mainDashWrapper.style.display = 'block';
+            mentoringWrapper.style.display = 'none';
         });
 
         // ==========================================
@@ -681,7 +764,6 @@
                 e.preventDefault();
                 const theme = link.getAttribute('data-theme');
                 
-                // Actualizar los checks visuales en ambos menús desplegables
                 themeLinks.forEach(l => {
                     l.classList.remove('active');
                     if(l.getAttribute('data-theme') === theme) {
@@ -689,7 +771,6 @@
                     }
                 });
 
-                // Limpiar clases previas y aplicar el nuevo filtro visual en todo el documento
                 document.documentElement.className = '';
                 if (theme !== 'normal') {
                     document.documentElement.classList.add(theme);
